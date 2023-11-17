@@ -2,31 +2,35 @@ function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
     } else {
-        document.getElementById('location-data').innerHTML = 'Geolocation is not supported by this browser.';
+        alert("Geolocation is not supported by this browser.");
     }
 }
 
 function showPosition(position) {
-    const data = {
-        ip: '',
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-    };
+    let lat = position.coords.latitude;
+    let long = position.coords.longitude;
 
-    // Send data to PHP for processing
-    sendDataToPHP(data);
+    getIP(lat, long);
 }
 
-function sendDataToPHP(data) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'location.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+async function getIP(lat, long) {
+    const response = await fetch('https://ipapi.co/json/');
+    const data = await response.json();
+    let ip = data.ip;
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById('location-data').innerHTML = xhr.responseText;
-        }
-    };
+    saveData(lat, long, ip);
+}
 
-    xhr.send(JSON.stringify(data));
+function saveData(lat, long, ip) {
+    fetch('save_data.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            latitude: lat,
+            longitude: long,
+            ip_address: ip
+        })
+    });
 }
