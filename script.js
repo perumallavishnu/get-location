@@ -19,7 +19,7 @@ function showPosition(position) {
 
 function sendDataToPHP(data) {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'save_location.php', true);
+    xhr.open('POST', 'location.php', true);
     xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
     xhr.onreadystatechange = function () {
